@@ -1,6 +1,6 @@
 import os
-from git import Repo
 from labdev.cli import status
+import pytest
 
 def test_status(capsys):
     repo = Repo(search_parent_directories=True)
@@ -15,4 +15,4 @@ def test_status(capsys):
     assert expected_branch_name in result
 
 if __name__ == "__main__":
-    test_status()
+    pytest.main(['-v', '-s'])

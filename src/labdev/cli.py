@@ -6,7 +6,7 @@ def status():
     repo = Repo(search_parent_directories=True)
     return f"Repo path: {repo.working_tree_dir}\nCurrent branch name: {repo.active_branch.name}"
 
-def init(capsys):
+def init():
     repo_path = os.getcwd()
     aider_conf_path = os.path.join(repo_path, '.aider.conf.yml')
     
@@ -19,7 +19,8 @@ set-env:
 """)
     
     gitignore_path = os.path.join(repo_path, '.gitignore')
-    with open(gitignore_path, 'a') as f:
+    with open(gitignore_path, 'a+') as f:
+        f.seek(0)
         if not any(line.strip() == '.aider*' for line in f):
             f.write('.aider*\n')
 
@@ -34,8 +35,8 @@ def main():
     init_parser.set_defaults(func=init)
 
     args = parser.parse_args()
-    if hasattr(args, 'func'):
-        print(args.func(capsys))
+    if hasattr(args, "func"):
+        args.func()
     else:
         parser.print_help()
 
