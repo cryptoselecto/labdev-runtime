@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from labdev.cli import status
 
 def test_status(capsys):
