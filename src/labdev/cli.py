@@ -4,7 +4,13 @@ import argparse
 
 def status():
     repo = Repo(search_parent_directories=True)
-    return f"Repo path: {repo.working_tree_dir}\nCurrent branch name: {repo.active_branch.name}"
+    latest_commit = repo.head.commit
+    
+    print(f"Repo path: {repo.working_tree_dir}")
+    print(f"Current branch name: {repo.active_branch.name}")
+    print(f"Latest commit short hash: {latest_commit.hexsha[:7]}")
+    print(f"Latest commit author name and email: {latest_commit.author.name} <{latest_commit.author.email}>")
+    print(f"Latest commit authored date: {latest_commit.authored_datetime}")
 
 def init():
     repo_path = os.getcwd()

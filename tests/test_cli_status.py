@@ -1,6 +1,6 @@
-from pathlib import Path
-import os
 from labdev.cli import status
+import os
+from pathlib import Path
 
 def test_status(capsys):
     old_cwd = os.getcwd()
