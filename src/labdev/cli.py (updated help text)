@@ -1,7 +1,6 @@
 import os
 from git import Repo
 import argparse
-import subprocess
 
 def status():
     repo = Repo(search_parent_directories=True)
@@ -42,7 +41,7 @@ def run(task):
     try:
         subprocess.run(['aider', '--non-interactive', task], check=True)
     except FileNotFoundError:
-        print("Error: aider executable not found. Please install aider.")
+        print("Error: aider executable not found.")
 
 def main():
     parser = argparse.ArgumentParser(description="Labdev runtime commands.")
