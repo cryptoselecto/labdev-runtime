@@ -40,9 +40,9 @@ def run(task):
         return
     
     try:
-        subprocess.run(['aider', '--non-interactive', task], check=True)
+        subprocess.run(['aider', '--message', task], check=True)
     except FileNotFoundError:
-        print("Error: aider executable not found. Please install aider.")
+        print("Error: aider executable not found.")
 
 def main():
     parser = argparse.ArgumentParser(description="Labdev runtime commands.")
@@ -60,9 +60,10 @@ def main():
 
     args = parser.parse_args()
     if hasattr(args, "func"):
-        args.func()
+        return args.func()
     else:
         parser.print_help()
+        return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
