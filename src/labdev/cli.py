@@ -2,6 +2,7 @@ import os
 from git import Repo
 import argparse
 import subprocess
+import sys
 
 def status():
     repo = Repo(search_parent_directories=True)
