@@ -1,6 +1,7 @@
 import os
 from labdev.cli import run
 import pytest
+import subprocess
 
 def test_run_task(capsys):
     task = "example_task"
