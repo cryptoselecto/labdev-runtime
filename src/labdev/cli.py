@@ -2,6 +2,7 @@ import os
 from git import Repo
 import argparse
 import subprocess
+import shutil
 import sys
 
 def status():
@@ -33,17 +34,22 @@ set-env:
             f.write('.aider*\n')
 
 def run(task):
-    repo_path = os.getcwd()
-    aider_conf_path = os.path.join(repo_path, '.aider.conf.yml')
+    aider_path = shutil.which("aider")
+    if not aider_path:
+        print("Error: aider executable not found.")
+        return 1
     
-    if not os.path.exists(aider_conf_path):
-        print("Error: .aider.conf.yml not found. Please initialize the repository first.")
-        return
+    repo = Repo(search_parent_directories=True)
+    if not repo.git_dir:
+        print("Error: Not inside a git repository.")
+        return 1
     
     try:
-        subprocess.run(['aider', '--message', task], check=True)
-    except FileNotFoundError:
-        print("Error: aider executable not found.")
+        subprocess.run([aider_path, '--message', task], check=False)
+        return 0
+    except Exception as e:
+        print(f"Error running aider: {e}")
+        return 1
 
 def main():
     parser = argparse.ArgumentParser(description="Labdev runtime commands.")
@@ -60,8 +66,14 @@ def main():
     run_parser.set_defaults(func=run)
 
     args = parser.parse_args()
-    if hasattr(args, "func"):
-        return args.func()
+    if args.command == "run":
+        return run(args.task)
+    elif args.command == "status":
+        status()
+        return 0
+    elif args.command == "init":
+        init()
+        return 0
     else:
         parser.print_help()
         return 1

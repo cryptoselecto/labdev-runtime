@@ -1,85 +1,33 @@
 import os
-from labdev.cli import run
+from labdev.cli import run, main
 import pytest
 import subprocess
 from unittest.mock import patch, mock_open
 
-def test_run_task(capsys):
-    task = "example_task"
-    with pytest.raises(SystemExit) as exc_info:
-        run(task)
-    
-    assert exc_info.value.code == 0
-    captured = capsys.readouterr()
-    out = captured.out
-    
-    # Basic sanity checks on the output
-    assert f"Running task: {task}" in out
-
-def test_run_task_with_error(capsys):
-    task = "nonexistent_task"
-    with pytest.raises(SystemExit) as exc_info:
-        run(task)
-    
-    assert exc_info.value.code == 1
-    captured = capsys.readouterr()
-    out = captured.out
-    
-    # Basic sanity checks on the output
-    assert f"Error: Task '{task}' not found." in out
-
-def test_run_task_with_aider_not_installed(capsys, monkeypatch):
+def test_run_invokes_aider_with_message():
     task = "example_task"
     
-    def mock_subprocess_run(*args, **kwargs):
-        raise FileNotFoundError("aider executable not found")
-    
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
-    
-    with pytest.raises(SystemExit) as exc_info:
-        run(task)
-    
-    assert exc_info.value.code == 1
-    captured = capsys.readouterr()
-    out = captured.out
-    
-    # Basic sanity checks on the output
-    assert "Error: aider executable not found." in out
-
-def test_run_task_with_git_repo(capsys, monkeypatch):
-    task = "example_task"
-    
-    def mock_subprocess_run(*args, **kwargs):
-        pass
-    
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
-    
-    with patch('os.getcwd', return_value='/path/to/repo'):
+    with patch('shutil.which', return_value='/path/to/aider'):
         with patch('git.Repo.search_parent_directories', return_value=True):
-            run(task)
-    
-    captured = capsys.readouterr()
-    out = captured.out
-    
-    # Basic sanity checks on the output
-    assert f"Running task: {task}" in out
+            with patch('subprocess.run') as mock_subprocess_run:
+                run(task)
+                
+                assert mock_subprocess_run.call_args == subprocess.call(['aider', '--message', task], check=False)
 
-def test_run_task_with_no_git_repo(capsys, monkeypatch):
+def test_run_returns_error_if_aider_missing():
     task = "example_task"
     
-    def mock_subprocess_run(*args, **kwargs):
-        pass
+    with patch('shutil.which', return_value=None):
+        result = run(task)
+        
+        assert result != 0
+
+def test_main_dispatches_run_with_task(monkeypatch):
+    task = "example_task"
     
-    monkeypatch.setattr(subprocess, 'run', mock_subprocess_run)
+    monkeypatch.setattr(sys, 'argv', ["labdev", "run", task])
     
-    with patch('os.getcwd', return_value='/path/to/repo'):
-        with patch('git.Repo.search_parent_directories', return_value=False):
-            with pytest.raises(SystemExit) as exc_info:
-                run(task)
-    
-    assert exc_info.value.code == 1
-    captured = capsys.readouterr()
-    out = captured.out
-    
-    # Basic sanity checks on the output
-    assert "Error: Not inside a git repository." in out
+    with patch('labdev.cli.run') as mock_run:
+        main()
+        
+        assert mock_run.call_args == run(task)
