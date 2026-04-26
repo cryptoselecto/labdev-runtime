@@ -1,21 +1,20 @@
 import os
 from labdev.cli import init
-import tempfile
 
-def test_init(tmp_path, capsys):
-    with tempfile.TemporaryDirectory() as temp_dir:
-        os.chdir(temp_dir)
+def test_init(tmp_path):
+    old_cwd = os.getcwd()
+    try:
+        os.chdir(tmp_path)
         
-        # Create an empty .gitignore file
-        gitignore_path = os.path.join(temp_dir, '.gitignore')
+        # Create an empty .gitignore file if needed
+        gitignore_path = os.path.join(tmp_path, '.gitignore')
         with open(gitignore_path, 'w') as f:
             pass
         
-        # Run the init function
         init()
         
-        # Check if .aider.conf.yml exists and contains the expected content
-        aider_conf_path = os.path.join(temp_dir, '.aider.conf.yml')
+        # Assertions on .aider.conf.yml and .gitignore inside tmp_path
+        aider_conf_path = os.path.join(tmp_path, '.aider.conf.yml')
         assert os.path.exists(aider_conf_path)
         
         with open(aider_conf_path, 'r') as f:
@@ -24,7 +23,9 @@ def test_init(tmp_path, capsys):
             assert "set-env:" in content
             assert "- OLLAMA_API_BASE=http://192.168.1.111:11434" in content
         
-        # Check if .gitignore contains a line ".aider*"
+        gitignore_path = os.path.join(tmp_path, '.gitignore')
         with open(gitignore_path, 'r') as f:
             content = f.read()
             assert ".aider*" in content
+    finally:
+        os.chdir(old_cwd)
