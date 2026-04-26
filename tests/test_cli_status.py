@@ -2,6 +2,7 @@ import os
 from git import Repo
 from labdev.cli import status
 import pytest
+import tempfile
 
 def test_status(capsys):
     with tempfile.TemporaryDirectory() as temp_dir:
