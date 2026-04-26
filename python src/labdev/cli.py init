@@ -1,0 +1,8 @@
+
+## Example
+
+1. Clone the repository and navigate to the project directory.
+2. Install dependencies using `pip install -r requirements.txt`.
+3. Initialize the project by running `python src/labdev/cli.py init`.
+4. Check repository status with `python src/labdev/cli.py status`.
+5. Run a task with `python src/labdev/cli.py run <task>`.

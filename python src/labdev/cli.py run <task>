@@ -1,0 +1,5 @@
+Replace `<task>` with the actual task you want to run.
+
+### Initialize Command
+
+To initialize the repo with `.aider.conf.yml`:
