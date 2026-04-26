@@ -8,4 +8,5 @@ src/labdev_runtime.egg-info/dependency_links.txt
 src/labdev_runtime.egg-info/entry_points.txt
 src/labdev_runtime.egg-info/requires.txt
 src/labdev_runtime.egg-info/top_level.txt
+tests/test_cli_init.py
 tests/test_cli_status.py
