@@ -3,6 +3,7 @@ from labdev.cli import run, main
 import pytest
 import subprocess
 from unittest.mock import patch, mock_open
+import sys
 
 def test_run_invokes_aider_with_message():
     task = "example_task"
